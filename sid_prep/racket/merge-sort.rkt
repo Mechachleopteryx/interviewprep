@@ -25,11 +25,4 @@
             (merge (sort l)
                    (sort r)))))))
 
-(define (divide my-list)
-    (if (= (length my-list)
-           1)
-        (list my-list)
-        (cons (list (first my-list))
-              (divide (rest my-list)))))
-
 (provide sort)

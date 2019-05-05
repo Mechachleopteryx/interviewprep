@@ -20,9 +20,9 @@
               (swap! vec i j)
               (set! swapped #t))))
         swapped))
-    (let bubble-loop ([swapped #t])
+    (let loop ([swapped #t])
       (when swapped
-        (bubble-loop (bubble-up))))
+        (loop (bubble-up))))
     (vector->list vec)))
 
 (provide sort)

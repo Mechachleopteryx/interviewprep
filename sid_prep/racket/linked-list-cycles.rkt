@@ -3,18 +3,17 @@
 (define ∈ set-member?)
 
 (define (contains-cycle? my-list)
+  ; uses scheme-style (m)cons list as a linked list
   (let ([visited-set (mutable-set)])
     (define (deja-vu? node)
       (∈ visited-set node))
-    (define (loop current-node)
+    (let loop ([current-node my-list])
       (if (deja-vu? current-node)
           #t
-          (begin (set-add! visited-set current-node)
-                 (if (equal? (mcdr current-node)
-                             null)
-                     #f
-                     (loop (mcdr current-node))))))
-    (let ([head (send my-list show)])
-      (loop head))))
+          (let ([next-node (mcdr current-node)])
+            (set-add! visited-set current-node)
+            (if (null? next-node)
+                #f
+                (loop next-node)))))))
 
 (provide contains-cycle?)
