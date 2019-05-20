@@ -1,26 +1,9 @@
 #lang racket
 
+(require "predicates.rkt")
+(require "print-util.rkt")
+
 (define DEFAULT-OFFSET 100)
-
-(define (prime? num)
-  (let loop ([i 2])
-    (if (<= i
-            (sqrt num))
-        (if (= (remainder num i)
-            0)
-         #f
-         (loop (add1 i)))
-        #t)))
-
-(define (multiple-of? n num)
-  (= (remainder num n)
-     0))
-
-(define (render-sierpinski num
-                           #:selector [selector? odd?])
-  (if (selector? num)
-      "●"
-      " "))
 
 (define (split-into-pairs lst)
   (let loop ([remaining-elements (cons 0 lst)])
@@ -31,16 +14,7 @@
                       (second remaining-elements)))
               (loop (rest remaining-elements))))))
 
-(define (render-row row offset renderer)
-  (define separators (stream-cons "" separators))
-  (displayln
-   (string-append (string-join
-                   (stream->list
-                    (stream-take separators
-                                 offset)))
-                  (string-join (map renderer row)))))
-
-(define (pascal n [renderer number->string])
+(define (pascal n [renderer number->string] [wait-seconds #f])
   (let loop ([i 0] [current-row '(1)])
     (when (or (< i n)
               (= n -1))
@@ -49,13 +23,15 @@
                (+ (car pair)
                   (cdr pair)))])
         (let ([offset (if (> n -1) n DEFAULT-OFFSET)])
-          (render-row current-row
-                      (modulo (- offset i)
-                              (* DEFAULT-OFFSET 2))
-                      renderer))
-        (sleep 0.1)
+          (render-list-as-string current-row
+                                 renderer
+                                 (modulo (- offset i)
+                                         (* DEFAULT-OFFSET 2))))
+        (when wait-seconds
+          (sleep wait-seconds))
         (loop (add1 i) next-row)))))
 
 (pascal -1
         (curry render-sierpinski
-               #:selector (curry multiple-of? 9)))
+               #:selector (curry multiple-of? 9))
+        0.1)
