@@ -3,8 +3,6 @@
 (require "predicates.rkt")
 (require "print-util.rkt")
 
-(define DEFAULT-OFFSET 100)
-
 (define (split-into-pairs lst)
   (let loop ([remaining-elements (cons 0 lst)])
     (if (null? remaining-elements)
@@ -22,11 +20,8 @@
              (for/list ([pair (in-list (split-into-pairs current-row))])
                (+ (car pair)
                   (cdr pair)))])
-        (let ([offset (if (> n -1) n DEFAULT-OFFSET)])
-          (render-list-as-string current-row
-                                 renderer
-                                 (modulo (- offset i)
-                                         (* DEFAULT-OFFSET 2))))
+        (render-list-in-display current-row
+                                renderer)
         (when wait-seconds
           (sleep wait-seconds))
         (loop (add1 i) next-row)))))
