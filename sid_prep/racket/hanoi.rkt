@@ -2,26 +2,41 @@
 
 (require "stack.rkt")
 
+(define (make-spindle cls%)
+  (class cls%
+    (super-new)
+    (init index)
+    (define spindle-index index)
+    (define/public (get-index)
+      spindle-index)))
+
 (define (make-towers n)
-  (let ([left (new ordered-stack%)]
-        [middle (new ordered-stack%)]
-        [right (new ordered-stack%)])
+  (let ([left (new (make-spindle ordered-stack%)
+                   [index 0])]
+        [middle (new (make-spindle ordered-stack%)
+                     [index 1])]
+        [right (new (make-spindle ordered-stack%)
+                    [index 2])])
     (for ([i (in-range n 0 -1)])
       (send left push i))
     (values left middle right)))
 
-(define (move-disk source target)
+(define (move-disk source target spare)
   (define disk (send source pop))
-  (send target push disk))
+  (send target push disk)
+  (println (sort (list source target spare)
+                 (λ (x y)
+                   (< (send x get-index)
+                      (send y get-index))))))
 
 (define (move-tower-of-height source target spare height)
   (cond [(= 0 height) (void)]
-        [(= 1 height) (move-disk source target)]
+        [(= 1 height) (move-disk source target spare)]
         [else (begin (move-tower-of-height source
                                            spare
                                            target
                                            (sub1 height))
-                     (move-disk source target)
+                     (move-disk source target spare)
                      (move-tower-of-height spare
                                            target
                                            source
