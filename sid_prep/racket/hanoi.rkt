@@ -21,13 +21,16 @@
       (send left push i))
     (values left middle right)))
 
-(define (move-disk source target spare)
-  (define disk (send source pop))
-  (send target push disk)
-  (println (sort (list source target spare)
+(define (print-towers . towers)
+  (println (sort towers
                  (λ (x y)
                    (< (send x get-index)
                       (send y get-index))))))
+
+(define (move-disk source target spare)
+  (define disk (send source pop))
+  (send target push disk)
+  (print-towers source target spare))
 
 (define (move-tower-of-height source target spare height)
   (cond [(= 0 height) (void)]
