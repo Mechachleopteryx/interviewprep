@@ -1,19 +1,17 @@
 #lang racket
 
 (define (merge l r)
-  (if (null? l)
-      r
-      (if (null? r)
-          l
-          (let ([l-head (car l)]
-                [r-head (car r)])
-            (if (< l-head r-head)
-                (cons l-head
-                      (merge (cdr l)
-                             r))
-                (cons r-head
-                      (merge l
-                             (cdr r))))))))
+  (cond [(null? l) r]
+        [(null? r) l]
+        [else (let ([l-head (car l)]
+                    [r-head (car r)])
+                (if (< l-head r-head)
+                    (cons l-head
+                          (merge (cdr l)
+                                 r))
+                    (cons r-head
+                          (merge l
+                                 (cdr r)))))]))
 
 (define (sort my-list)
   (let ([len (length my-list)])
