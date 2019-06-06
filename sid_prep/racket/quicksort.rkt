@@ -53,4 +53,12 @@
                 (list pivot)
                 (sort high)))))
 
+(define (sort lst)
+  ;; using pattern matching
+  (match lst
+    ['() '()]
+    [(cons x xs) (append (sort (filter (curry > x) xs))
+                         (list x)
+                         (sort (filter (curry <= x) xs)))]))
+
 (provide sort)
