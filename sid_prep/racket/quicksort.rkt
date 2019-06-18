@@ -1,6 +1,7 @@
 #lang racket
 
 (require racket/list)
+(require racket/function)
 
 (define (partition pred lst)
   ;; iterative
