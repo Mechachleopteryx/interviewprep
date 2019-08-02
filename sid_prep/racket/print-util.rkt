@@ -4,7 +4,7 @@
 (require racket/function)
 (require racket/string)
 
-(define DEFAULT-DISPLAY-WIDTH 272)
+(define DEFAULT-DISPLAY-WIDTH 80)  ; 272, 1911
 (define separators (stream-cons " " separators))
 
 (define (render-as-string lst renderer)
