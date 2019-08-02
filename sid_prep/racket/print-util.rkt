@@ -14,10 +14,8 @@
 (define (extract-visible string-to-render
                          [display-width DEFAULT-DISPLAY-WIDTH])
   (define string-width (string-length string-to-render))
-  (define middle-of-string (floor (/ string-width
-                                     2)))
-  (define center-offset (floor (/ display-width
-                                  2)))
+  (define middle-of-string (quotient string-width 2))
+  (define center-offset (quotient display-width 2))
   (define provisional-left-index (- middle-of-string
                                     center-offset))
   (define provisional-right-index (+ middle-of-string
@@ -30,8 +28,7 @@
   (define right-index (if (< provisional-right-index
                              string-width)
                           provisional-right-index
-                          (- string-width
-                             1)))
+                          string-width))
   (substring string-to-render
              left-index
              right-index))

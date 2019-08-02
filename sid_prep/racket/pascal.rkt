@@ -26,7 +26,7 @@
           (sleep wait-seconds))
         (loop (add1 i) next-row)))))
 
-(pascal -1
+(pascal 24
         (curry render-sierpinski
-               #:selector (curry multiple-of? 9))
-        0.1)
+               #:selector (curry multiple-of? 6))
+        #f)
