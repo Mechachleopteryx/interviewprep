@@ -6,25 +6,26 @@
 (require "print-util.rkt")
 
 (define (combine cords [i 0])
+  ;; combine multiple lists into one list by selecting
+  ;; one element from each list in turn
   (if (empty? cords)
       null
-      (let* ([current-cord-lens (list-ref-lens i)]
-             [current-cord (lens-view current-cord-lens
-                                      cords)])
-        (if (null? current-cord)
-            (let* ([remaining-cords (remq current-cord
-                                          cords)])
-              (if (null? remaining-cords)
-                  (combine remaining-cords)
-                  (combine remaining-cords
-                           (modulo i
-                                   (length remaining-cords)))))
+      (let ([current-cord (lens-view (list-ref-lens i)
+                                     cords)])
+        (if (empty? current-cord)
+            (let ([remaining-cords (remq current-cord
+                                         cords)])
+              (combine remaining-cords
+                       (remainder i
+                                  (if (empty? remaining-cords)
+                                      1
+                                      (length remaining-cords)))))
             (cons (first current-cord)
-                  (combine (lens-set current-cord-lens
+                  (combine (lens-set (list-ref-lens i)
                                      cords
                                      (rest current-cord))
-                           (modulo (add1 i)
-                                   (length cords))))))))
+                           (remainder (add1 i)
+                                      (length cords))))))))
 
 (define (divide lst n)
   (let loop ([remaining-list lst]
@@ -43,10 +44,9 @@
           1)
       lst
       (let ([cords (divide lst n)])
-        (let ([result (combine (map (curry braid
-                                           #:n n)
-                                    cords))])
-          result))))
+        (combine (map (curry braid
+                             #:n n)
+                      cords)))))
 
 (provide braid
          divide
