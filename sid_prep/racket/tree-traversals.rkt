@@ -34,13 +34,16 @@ Body
 Tests
 |#
 
-(struct tree (contents children))
+(require "tree.rkt")
 
 (define (list->tree tree-as-list)
   (if (list? tree-as-list)
       (tree tree-as-list
             (map list->tree tree-as-list))
       (tree tree-as-list null)))
+
+(define (tree->list tree)
+  (tree-data tree))
 
 ;; can use this function to test lazy evaluation
 ;; of some of the approaches below
@@ -52,7 +55,7 @@ Tests
 
 (module preorder racket/base
   (define (traverse tree)
-    (cons (tree-contents tree)
+    (cons (tree-data tree)
           (traverse-children (tree-children tree))))
 
   ;;; approach #1
@@ -69,20 +72,20 @@ Tests
 
   ;; combined approach #2
   (define (traverse tree)
-    (cons (tree-contents tree)
+    (cons (tree-data tree)
           (apply append
                  (map traverse (tree-children tree)))))
 
   ;; lazy approach with streams
   (define (traverse tree)
-    (stream-cons (tree-contents tree)
+    (stream-cons (tree-data tree)
                  (apply stream-append
                         (map traverse (tree-children tree)))))
 
   ;; lazy approach with generator
   (define (traverse tree)
     (generator ()
-               (yield (tree-contents tree))
+               (yield (tree-data tree))
                (for ([g (in-list (map traverse (tree-children tree)))])
                  (for ([c (in-producer g (void))])
                    (yield c)))))
@@ -94,7 +97,7 @@ Tests
     (stream-append (apply stream-append
                           (map traverse
                                (tree-children tree)))
-                   (stream (tree-contents tree))))
+                   (stream (tree-data tree))))
   (provide (rename-out [traverse postorder-traverse])))
 
 (module inorder racket/base
@@ -102,9 +105,9 @@ Tests
   (define (traverse tree)
     (let ([children (tree-children tree)])
       (if (empty? children)
-          (stream (tree-contents tree))
+          (stream (tree-data tree))
           (stream-append (traverse (first children))
-                         (stream (tree-contents tree))
+                         (stream (tree-data tree))
                          (traverse (second children))))))
   (provide (rename-out [traverse inorder-traverse])))
 
@@ -118,7 +121,7 @@ Tests
           (let ([current-node (first queue)]
                 [remaining-nodes (rest queue)])
             (loop (append result
-                         (list (tree-contents current-node)))
+                         (list (tree-data current-node)))
                  (append remaining-nodes
                           (tree-children current-node)))))))
 
@@ -135,7 +138,7 @@ Tests
           (let ([current-node (stream-first queue)]
                 [remaining-nodes (stream-rest queue)])
             (loop (stream-append result
-                                 (stream (tree-contents current-node)))
+                                 (stream (tree-data current-node)))
                   (stream-append remaining-nodes
                                  (in-list (tree-children current-node))))))))
 
@@ -147,7 +150,7 @@ Tests
           empty-stream
           (let ([current-node (first queue)]
                 [remaining-nodes (rest queue)])
-            (stream-cons (tree-contents current-node)
+            (stream-cons (tree-data current-node)
                          (loop (append remaining-nodes
                                        (tree-children current-node))))))))
 
